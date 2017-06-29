@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Aspect Ratio with Preview Pane | Jcrop Demo</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.Jcrop.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.Jcrop.js"></script>
+    <script type="text/javascript" src="/js/xiaoguo.js"></script>
+</head>
+<body>
+
+<img src="/moren.jpg" id="target" alt="[Jcrop Example]"/>
+
+<div id="preview-pane">
+    <div class="preview-container">
+        <img src="/moren.jpg" id="viewPort" class="jcrop-preview" alt="Preview"/>
+    </div>
+</div>
+
+<input type="button" value="剪裁！！" id="btn">
+
+
+<script type="text/javascript">
+    $("input").click(function () {
+        var w = parseInt($(".jcrop-holder>div:first").css("width"));
+        var h = parseInt($(".jcrop-holder>div:first").css("height"));
+        var x = parseInt($(".jcrop-holder>div:first").css("left"));
+        var y = parseInt($(".jcrop-holder>div:first").css("top"));
+
+        $.post("/docut",{
+            "w" : w,
+            "h" : h,
+            "x" : x,
+            "y" : y
+        },function(result){
+            if (result.code == '0000') {
+                alert(result.content);
+                window.location.href = '/'
+            } else {
+                alert(result.content);
+                window.location.reload();
+            }
+        });
+    });
+
+    $.post('/do', {}, function (result) {
+        console.log(result)
+        if (result.code == '0000') {
+            $('#target').attr("src", "/" + result.content.avatar);
+            $('.jcrop-holder').find('img').attr("src", "/" + result.content.avatar)
+        } else {
+            alert("您是否已经登录");
+            window.location.href = '/login';
+        }
+    });
+
+</script>
+</body>
+</html>
+

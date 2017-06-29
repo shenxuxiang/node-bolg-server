@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>班级说说</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        .grid {
+            height: 200px;
+        }
+
+        .avatar {
+            border-radius: 50%;
+        }
+
+        #quanbushuoshuo {
+            height: 500px;
+        }
+    </style>
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/underscore-noflect.js"></script>
+</head>
+<style>
+    .form-group {
+        margin-bottom: 40px;
+    }
+    #nav-not-login, #nav-logined, #content-not-login, #content-logined {
+        display: none;
+    }
+</style>
+<body>
+    <% include header.ejs %>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Hello World</h1>
+            <div id="content-not-login">
+                <p>发现您还没有登录</p>
+                <p class="goLogin"><a class="btn btn-primary btn-lg" href="/login" role="button">去登陆</a></p>
+            </div >
+            <div id="content-logined">
+                <p class="goLogin"><a href="/setinfo"><img src="/moren.jpg" alt=""></a></p>
+                <p class="hello"><a href="/shuoshuo" class="btn btn-md btn-success" style="width:120px">去发表说说</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(function () {
+        $('#bs-navbar').find('li').removeClass('active');
+        $('#bs-navbar').find('li').eq(0).addClass('active');
+        $.post('/do', {}, function (result) {
+            if (result.code == '0000') {
+                $('#nav-logined').show();
+                $('#content-logined').show();
+                $("#nav-not-login").hide();
+                $('#content-not-login').hide();
+                $('.hello>span').text(result.content.name);
+                $('.nav-name').find('span').text(result.content.name);
+                $('.goLogin').find('img').attr('src', result.content.avatar)
+            } else {
+                $('#nav-logined').hide();
+                $('#content-logined').hide();
+                $("#nav-not-login").show();
+                $('#content-not-login').show();
+            }
+        });
+    })
+</script>

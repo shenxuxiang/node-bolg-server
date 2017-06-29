@@ -1,0 +1,22 @@
+{
+  "name": "weibo",
+  "version": "1.0.0",
+  "description": "this is my create classicweibo",
+  "main": "app.js",
+  "dependencies": {
+    "crypto": "0.0.3",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
+    "express-session": "^1.15.2",
+    "formidable": "^1.1.1",
+    "gm": "^1.23.0",
+    "mongodb": "^2.2.26",
+    "silly-datetime": "^0.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "shenxuxiang",
+  "license": "ISC"
+}

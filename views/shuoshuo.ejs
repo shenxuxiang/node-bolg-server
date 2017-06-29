@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>班级说说</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        .grid {
+            height: 200px;
+        }
+
+        .avatar {
+            border-radius: 50%;
+        }
+
+        #quanbushuoshuo {
+            height: 500px;
+        }
+    </style>
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/underscore-noflect.js"></script>
+</head>
+<style>
+    .form-group {
+        margin-bottom: 40px;
+    }
+    #nav-not-login, #nav-logined, #content-not-login, #content-logined {
+        display: none;
+    }
+    #myTextarea {
+        width: 400px;
+        height: 80px;
+        max-width: 100%;
+        max-height: 200px;
+        font-size: 14px;
+        line-height: 1.5;
+        resize: both;
+        padding: 10px;
+        box-sizing: border-box;
+        border-radius: 6px;
+        word-wrap: break-word;
+    }
+    * {
+        outline: none;
+    }
+    .username {
+        vertical-align: bottom;
+        color: #ccc;
+    }
+    #myTextarea::-webkit-input-placeholder {
+        color: #ccc;
+    }
+    #myTextarea:-moz-input-placeholder {
+        color: #ccc;
+    }
+    #myTextarea:-ms-input-placeholder {
+        color: #ccc;
+    }
+    #content > ul.row {
+        padding: 0;
+        width: 1140px;
+        list-style: none;
+        display: -webkit-flex;
+        -webkit-flex-wrap: wrap;
+        -webkit-justify-content: flex-start;
+        -webkit-align-content: space-between;
+    }
+    #content > ul.row > li {
+        width: 31.3333%;
+        height: 120px;
+        padding: 10px;
+        margin: 0px 1% 2%;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+    }
+    #content > ul.row > li > .top {
+        width: 100%;
+        height: 50px;
+        border-bottom: 1px solid #ccc;
+    }
+    #content > ul.row > li > .top > .img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        float: left;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+    #content > ul.row > li > .top > .img > img{
+        width: 40px;
+        height: 40px;
+    }
+    #content > ul.row > li > .top > .userName {
+        line-height: 40px;
+        padding-top: 10px;
+    }
+    #content > ul.row > li > .top > .userName > span:first-child{
+        float: left;
+        font-size: 16px;
+        color: #666;
+    }
+    #content > ul.row > li > .top > .userName > span:last-child{
+        float: right;
+        font-size: 12px;
+        color: #ccc;
+    }
+    #content > ul.row > li > .shuoshuo {
+        width: 100%;
+        height: 50px;
+        padding-top: 10px;
+        color: #666;
+        line-height: 1.5;
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap
+    }
+
+</style>
+<body>
+    <% include header.ejs %>
+    <div class="jumbotron">
+        <div class="container">
+            <p class="goLogin">
+                <a href="/setinfo"><img src="" alt="" width="100px"></a>
+                <span class="username"></span>
+            </p>
+            <textarea id="myTextarea" placeholder="你想说些什么呢"></textarea>
+            <p class="hello"><a class="btn btn-md btn-success" style="width:120px; margin-top: 20px" id="fabiao">发表说说</a></p>
+        </div>
+    </div>
+    <div id="content" class="container">
+        <ul class="row">
+
+        </ul>
+    </div>
+</body>
+</html>
+<script>
+    $(function () {
+        $('#bs-navbar').find('li').removeClass('active');
+        $('#bs-navbar').find('li').eq(0).addClass('active');
+        $.post('/do', {}, function (result) {
+            if (result.code == '0000') {
+                $('#nav-logined').show();
+                $('#content-logined').show();
+                $("#nav-not-login").hide();
+                $('#content-not-login').hide();
+                $('.hello>span').text(result.content.name);
+                $('.nav-name').find('span').text(result.content.name);
+                $('.username').text(result.content.name);
+                $('.goLogin').find('img').attr('src', result.content.avatar)
+            } else {
+                $('#nav-logined').hide();
+                $('#content-logined').hide();
+                $("#nav-not-login").show();
+                $('#content-not-login').show();
+            }
+        });
+
+        $("#fabiao").click(function (e) {
+            var comment = $('#myTextarea').val();
+            var name = $('.username').text();
+            var avatar = $('.goLogin').find('img').attr('src');
+            $.post('/fabiao',{
+                "comment": comment,//说说
+                "name": name,//姓名
+                "avatar": avatar,//头像
+                "time": new Date()
+            }, function (result) {
+                console.log(result);
+                if (result.code == '0000') {
+                    $('#myTextarea').val('');
+                    alert('发表成功');
+                    getListAll();
+                } else {
+                    alert(result.content);
+                }
+            })
+        })
+        getListAll();
+        function getListAll () {
+            $.post('/listall', {}, function (result) {
+                console.log(result)
+                var len = result.content.length;
+                var li = '';
+                var context = null;
+                for (var i = 0; i < len; i ++) {
+                    context = result.content[i];
+                    li += '<li  class="col-lg-4">'
+                       + '<div class="top">'
+                       + '<div class="img">'
+                       + '<img src="' + context.avatar + '" alt="">'
+                       + '</div>'
+                       + '<div class="userName">'
+                       + '<span>' + context.name + '</span>'
+                       + '<span>' + context.time + '</span>'
+                       + '</div>'
+                       + '</div>'
+                       + '<div class="shuoshuo">' + context.comment + '</div>'
+                       + '</li>'
+                }
+                $('#content>.row').html(li);
+            })
+        }
+    })
+</script>
